@@ -1,17 +1,11 @@
 include(GNUInstallDirs)
 
 ###
-# Library definition:
+# Library definition
 ###
 
 add_library(${PROJECT_NAME} INTERFACE)
-file(
-    GLOB_RECURSE
-    source_files
-    RELATIVE .
-    CONFIGURE_DEPENDS
-    "."
-)
+file(GLOB_RECURSE source_files CONFIGURE_DEPENDS ".hpp")
 target_sources(${PROJECT_NAME} INTERFACE ${source_files})
 target_include_directories(
     ${PROJECT_NAME}
@@ -21,7 +15,7 @@ target_include_directories(
 )
 
 ###
-# Install library:
+# Install library
 ###
 
 # For when concumed as a subdirectory.
