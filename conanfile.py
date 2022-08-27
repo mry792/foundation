@@ -4,7 +4,7 @@ from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.files import update_conandata
 from conan.tools.scm import Git
-from conans.tools import Git as LegacyGit
+from conans.tools import Git as LegacyGit, get_env
 
 
 class FoundationRecipe (ConanFile):
@@ -19,7 +19,15 @@ class FoundationRecipe (ConanFile):
     )
 
     settings = 'compiler', 'build_type'
-    generators = 'virtualenv', 'CMakeToolchain'
+    generators = (
+        'virtualenv',
+        'CMakeDeps',
+        'CMakeToolchain',
+    )
+
+    @property
+    def _run_tests (self):
+        return get_env('CONAN_RUN_TESTS', default = False)
 
     def package_id (self):
         self.info.clear()
@@ -28,6 +36,11 @@ class FoundationRecipe (ConanFile):
         git = LegacyGit(self.recipe_folder)
         tag = git.run('describe --tags')
         self.version = tag[1:]
+
+    def build_requirements (self):
+        if self._run_tests:
+            self.test_requires('catch2/2.13.9')
+            self.test_requires('trompeloeil/42')
 
     def export (self):
         git = Git(self, self.recipe_folder)
